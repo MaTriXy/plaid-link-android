@@ -89,7 +89,13 @@ class MainActivity : AppCompatActivity() {
             token = addTokenResponse.add_token
           ),
         )
+<<<<<<< HEAD
       }, { Toast.makeText(this, "$it", Toast.LENGTH_SHORT).show() })
+=======
+      }, {
+        Toast.makeText(this, "$it", Toast.LENGTH_SHORT).show() })
+
+>>>>>>> zsweigart comments
   }
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
