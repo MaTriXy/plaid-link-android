@@ -12,6 +12,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,15 +21,20 @@ import com.plaid.link.Plaid;
 import com.plaid.link.configuration.LinkConfiguration;
 import com.plaid.link.configuration.PlaidProduct;
 import com.plaid.link.result.PlaidLinkResultHandler;
+import com.plaid.linksample.network.LinkSampleApi;
 
 import kotlin.Unit;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainActivityJava extends AppCompatActivity {
 
   private TextView result;
   private TextView tokenResult;
+  private LinkSampleApi linkSampleApi;
 
   private PlaidLinkResultHandler myPlaidResultHandler = new PlaidLinkResultHandler(
       linkSuccess -> {
@@ -61,6 +67,7 @@ public class MainActivityJava extends AppCompatActivity {
     setContentView(R.layout.activity_main);
     result = findViewById(R.id.result);
     tokenResult = findViewById(R.id.public_token_result);
+    linkSampleApi = ((LinkSampleApplication) getApplication()).getLinkSampleApi();
 
     View button = findViewById(R.id.open_link);
     button.setOnClickListener(view -> {
@@ -84,15 +91,17 @@ public class MainActivityJava extends AppCompatActivity {
    * <a href="https://plaid.com/docs/link/android/#parameter-reference">parameter reference</>
    */
   private void openLink() {
-    ArrayList<PlaidProduct> products = new ArrayList<>();
-    products.add(PlaidProduct.TRANSACTIONS);
-    Plaid.openLink(
-        this,
-        new LinkConfiguration.Builder()
-            .clientName("Link demo")
-            .products(products)
-            .publicKey(getString(R.string.plaid_public_key))
-            .build());
+    // We create an item-add-token in order to authenticate item creation.
+    linkSampleApi.getItemAddToken()
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(addTokenResponse -> {
+          Plaid.openLink(
+              MainActivityJava.this,
+              new LinkConfiguration.Builder(
+                  "Link demo",
+                  Arrays.asList(PlaidProduct.TRANSACTIONS)).build());
+        }, error -> { Toast.makeText(this, error.toString(), Toast.LENGTH_SHORT).show(); });
   }
 
   @Override

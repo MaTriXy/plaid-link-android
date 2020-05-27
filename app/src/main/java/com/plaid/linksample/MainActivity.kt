@@ -11,17 +11,21 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.plaid.link.Plaid
 import com.plaid.link.configuration.PlaidProduct
 import com.plaid.link.linkConfiguration
 import com.plaid.link.openPlaidLink
 import com.plaid.link.result.PlaidLinkResultHandler
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 class MainActivity : AppCompatActivity() {
 
   private lateinit var result: TextView
   private lateinit var tokenResult: TextView
+  private val linkSampleApi by lazy { (application as LinkSampleApplication).linkSampleApi }
 
   private val myPlaidResultHandler by lazy {
     PlaidLinkResultHandler(
@@ -72,13 +76,20 @@ class MainActivity : AppCompatActivity() {
    * [parameter reference](https://plaid.com/docs/link/android/#parameter-reference).
    */
   private fun openLink() {
-    this@MainActivity.openPlaidLink(
-      linkConfiguration = linkConfiguration {
-        clientName = "Link demo"
-        products = listOf(PlaidProduct.TRANSACTIONS)
-        publicKey = getString(R.string.plaid_public_key)
-      }
-    )
+    // We create an item-add-token in order to authenticate item creation.
+    linkSampleApi.getItemAddToken()
+      .subscribeOn(Schedulers.io())
+      .observeOn(AndroidSchedulers.mainThread())
+      .subscribe({ addTokenResponse ->
+        Plaid.openLink(
+          activity = this,
+          linkConfiguration = LinkConfiguration(
+            clientName = "Link demo",
+            products = listOf(PlaidProduct.TRANSACTIONS),
+            token = addTokenResponse.add_token
+          ),
+        )
+      }, { Toast.makeText(this, "$it", Toast.LENGTH_SHORT).show() })
   }
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
