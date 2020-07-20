@@ -18,22 +18,16 @@ To run the sample app, you'll need a Plaid account. You can create one on [our w
 4. Click "Save Changes", you may be prompted to re-enter your password
 
 ## 2. Run the token server (imitation [backend server][link-quickstart])
-1. [Install npm][npm-installation], and run `npm install` to install necessary dependencies.
-2. Copy your public key, client id, and secret from your [Plaid Dashboard][plaid-dashboard-keys] keys page
-3. Change the values in `index.js` to match these values
-```
-  var PLAID_CLIENT_ID = envvar.string('PLAID_CLIENT_ID');
-  var PLAID_SANDBOX_SECRET = envvar.string('PLAID_SANDBOX_SECRET');
-  var PLAID_PUBLIC_KEY = envvar.string('PLAID_PUBLIC_KEY');
-```
-4. Run the server with `node index.js` to start running on `localhost:8000`
-5. [Optionally] If developing on a device (and not an emulator), modify `baseUrl` in `LinkSampleRetrofit` to your computer's IP address
+1. [Install npm][npm-installation]
+2. Copy your client id and secret from your [Plaid Dashboard][plaid-dashboard-keys] keys page
+3. Run `./start_server ${CLIENT_ID} ${SECRET}` but replace `client_id` and `secret` with values from your dashboard account.
+4. Server is now running on `localhost:8000`
 
 ## 3. Run the sample application
 1. 🚀
 
 # Features
-- How to integrate the Plaid Link sdk: `build.gradle` files, `public_key` configuration, `Plaid` initialization
+- How to integrate the Plaid Link sdk: `build.gradle` files, `link_token` configuration, `Plaid` initialization
 - Kotlin and Java sample Activity that show how to start Link and receive a result
 - Use of `PlaidLinkResultHandler` for easy handling of Link results
 - _Optional_ use of `LinkEventListener` to get events from Link
@@ -83,7 +77,6 @@ SOFTWARE.
 [plaid-signup]: https://dashboard.plaid.com/signup?email=
 [plaid-dashboard-api]: https://dashboard.plaid.com/team/api
 [plaid-dashboard-keys]: https://dashboard.plaid.com/team/keys
-[public-key]: https://github.com/plaid/plaid-link-android/blob/update-readme/app/src/main/res/values/donottranslate.xml
 [changelog]: https://github.com/plaid/plaid-link-android/releases
 [npm-installation]: https://docs.npmjs.com/downloading-and-installing-node-js-and-npm
 [link-quickstart]: https://plaid.com/docs/quickstart/

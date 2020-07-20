@@ -15,7 +15,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.plaid.link.Plaid
 import com.plaid.link.configuration.PlaidProduct
-import com.plaid.link.linkConfiguration
+import com.plaid.link.linkTokenConfiguration
 import com.plaid.link.openPlaidLink
 import com.plaid.link.result.PlaidLinkResultHandler
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -76,26 +76,18 @@ class MainActivity : AppCompatActivity() {
    * [parameter reference](https://plaid.com/docs/link/android/#parameter-reference).
    */
   private fun openLink() {
-    // We create an item-add-token in order to authenticate item creation.
-    linkSampleApi.getItemAddToken()
+    // We create a link_token in order to authenticate item creation.
+    linkSampleApi.getLinkToken()
       .subscribeOn(Schedulers.io())
       .observeOn(AndroidSchedulers.mainThread())
-      .subscribe({ addTokenResponse ->
+      .subscribe({ linkTokenResponse ->
         Plaid.openLink(
           activity = this,
-          linkConfiguration = LinkConfiguration(
-            clientName = "Link demo",
-            products = listOf(PlaidProduct.TRANSACTIONS),
-            token = addTokenResponse.add_token
-          ),
+          linkTokenConfiguration = linkTokenConfiguration {
+            token = linkTokenResponse.link_token
+          }
         )
-<<<<<<< HEAD
       }, { Toast.makeText(this, "$it", Toast.LENGTH_SHORT).show() })
-=======
-      }, {
-        Toast.makeText(this, "$it", Toast.LENGTH_SHORT).show() })
-
->>>>>>> zsweigart comments
   }
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -92,15 +92,16 @@ public class MainActivityJava extends AppCompatActivity {
    */
   private void openLink() {
     // We create an item-add-token in order to authenticate item creation.
-    linkSampleApi.getItemAddToken()
+    linkSampleApi.getLinkToken()
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(addTokenResponse -> {
+        .subscribe(linkTokenResponse -> {
           Plaid.openLink(
               MainActivityJava.this,
-              new LinkConfiguration.Builder(
-                  "Link demo",
-                  Arrays.asList(PlaidProduct.TRANSACTIONS)).build());
+              new LinkTokenConfiguration.Builder()
+              .token(linkTokenResponse.link_token)
+              .build()
+              .toLinkConfiguration());
         }, error -> { Toast.makeText(this, error.toString(), Toast.LENGTH_SHORT).show(); });
   }
 
